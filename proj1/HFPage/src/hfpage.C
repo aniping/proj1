@@ -12,7 +12,15 @@
 
 void HFPage::init(PageId pageNo)
 {
-  // fill in the body
+  curPage = pageNo;
+  nextPage = INVALID_PAGE;
+  prevPage = INVALID_PAGE;
+  
+  usedPtr = MAX_SPACE - DPFIXED;
+  freeSpace = MAX_SPACE - DPFIXED;
+  
+  slotCnt = 0;
+  
 }
 
 // **********************************************************
@@ -35,28 +43,29 @@ void HFPage::dumpPage()
 // **********************************************************
 PageId HFPage::getPrevPage()
 {
-    // fill in the body
-    return 0;
+	
+    return prevPage;
 }
 
 // **********************************************************
 void HFPage::setPrevPage(PageId pageNo)
 {
 
-    // fill in the body
+    prevPage = pageNo;
 }
 
 // **********************************************************
 PageId HFPage::getNextPage()
 {
-    // fill in the body
-    return 0;
+
+    return nextPage;
 }
 
 // **********************************************************
 void HFPage::setNextPage(PageId pageNo)
 {
-  // fill in the body
+
+	nextPage = pageNo;
 }
 
 // **********************************************************
@@ -65,7 +74,26 @@ void HFPage::setNextPage(PageId pageNo)
 // RID of the new record is returned via rid parameter.
 Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 {
-    // fill in the body
+	if (recLen > freeSpace)
+		return DONE;
+	
+	usedPtr -= recLen;
+	
+	for (int i = 0; i < recLen; i++) {
+		data[usedPtr + i] = *(recPtr + i);
+	}
+	
+	slot[slotCnt].offset = usedPtr;
+	slot[slotCnt].length = recLen;
+
+	rid.pageNo = curPage;
+	rid.slotNo = slotCnt;
+	
+	slotCnt++;
+	
+	freeSpace -= (recLen + sizeof(slot_t));
+	
+	
     return OK;
 }
 
@@ -75,7 +103,9 @@ Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 // Use memmove() rather than memcpy() as space may overlap.
 Status HFPage::deleteRecord(const RID& rid)
 {
-    // fill in the body
+
+
+
     return OK;
 }
 
