@@ -1,0 +1,221 @@
+
+Running HFPage Tests tests...
+
+  Test 1: Page Initialization Checks
+4
+Current Page No.: 7, Next Page No.: 8, Prev Page No.: -1, Available Space: 1000
+Page Empty as expected.
+4
+
+  Test 2: Insert and traversal of records
+Inserted record, RID 7, 0
+Inserted record, RID 7, 1
+Inserted record, RID 7, 2
+Inserted record, RID 7, 3
+Inserted record, RID 7, 4
+Inserted record, RID 7, 5
+Inserted record, RID 7, 6
+Inserted record, RID 7, 7
+Inserted record, RID 7, 8
+Inserted record, RID 7, 9
+Inserted record, RID 7, 10
+Inserted record, RID 7, 11
+Inserted record, RID 7, 12
+Inserted record, RID 7, 13
+Inserted record, RID 7, 14
+Inserted record, RID 7, 15
+Inserted record, RID 7, 16
+Inserted record, RID 7, 17
+Inserted record, RID 7, 18
+Inserted record, RID 7, 19
+Retrieved record, RID 7, 0
+Retrieved record, RID 7, 1
+Retrieved record, RID 7, 2
+Retrieved record, RID 7, 3
+Retrieved record, RID 7, 4
+Retrieved record, RID 7, 5
+Retrieved record, RID 7, 6
+Retrieved record, RID 7, 7
+Retrieved record, RID 7, 8
+Retrieved record, RID 7, 9
+Retrieved record, RID 7, 10
+Retrieved record, RID 7, 11
+Retrieved record, RID 7, 12
+Retrieved record, RID 7, 13
+Retrieved record, RID 7, 14
+Retrieved record, RID 7, 15
+Retrieved record, RID 7, 16
+Retrieved record, RID 7, 17
+Retrieved record, RID 7, 18
+Retrieved record, RID 7, 19
+4
+
+  Test 3: Insert and Delete fixed-sizerecords
+Inserted record, RID 7, 0
+Inserted record, RID 7, 1
+Inserted record, RID 7, 2
+Inserted record, RID 7, 3
+Inserted record, RID 7, 4
+Inserted record, RID 7, 5
+Inserted record, RID 7, 6
+Inserted record, RID 7, 7
+Inserted record, RID 7, 8
+Inserted record, RID 7, 9
+Inserted record, RID 7, 10
+Inserted record, RID 7, 11
+Inserted record, RID 7, 12
+Inserted record, RID 7, 13
+Inserted record, RID 7, 14
+Inserted record, RID 7, 15
+Inserted record, RID 7, 16
+Inserted record, RID 7, 17
+Inserted record, RID 7, 18
+Inserted record, RID 7, 19
+Deleting Records
+Deleting Rid(7,0).
+Deleting Rid(7,4).
+Deleting Rid(7,8).
+Deleting Rid(7,12).
+Deleting Rid(7,19).
+After Deletion.
+Retrieving record 7, 1
+Retrieving record 7, 2
+Retrieving record 7, 3
+Retrieving record 7, 5
+Retrieving record 7, 6
+Retrieving record 7, 7
+Retrieving record 7, 9
+Retrieving record 7, 10
+Retrieving record 7, 11
+Retrieving record 7, 13
+Retrieving record 7, 14
+Retrieving record 7, 15
+Retrieving record 7, 16
+Retrieving record 7, 17
+Retrieving record 7, 18
+4
+
+  Test 4: Insert and Delete variable-length records
+Records in the page before deletion.
+Retrieved record, RID 7, 0
+Retrieved record, RID 7, 1
+Retrieved record, RID 7, 2
+Retrieved record, RID 7, 3
+Retrieved record, RID 7, 4
+Retrieved record, RID 7, 5
+Retrieved record, RID 7, 6
+Retrieved record, RID 7, 7
+Retrieved record, RID 7, 8
+Retrieved record, RID 7, 9
+Retrieved record, RID 7, 10
+Retrieved record, RID 7, 11
+Retrieved record, RID 7, 12
+Retrieved record, RID 7, 13
+Retrieved record, RID 7, 14
+Retrieved record, RID 7, 15
+Retrieved record, RID 7, 16
+Retrieved record, RID 7, 17
+Retrieved record, RID 7, 18
+Retrieved record, RID 7, 19
+Deleting Records
+Deleting Rid(7,0).
+Deleting Rid(7,4).
+Deleting Rid(7,8).
+Deleting Rid(7,12).
+Deleting Rid(7,19).
+After Deletion. 
+Retrieving record 7, 1
+Retrieving record 7, 2
+Retrieving record 7, 3
+Retrieving record 7, 5
+Retrieving record 7, 6
+Retrieving record 7, 7
+Retrieving record 7, 9
+Retrieving record 7, 10
+Retrieving record 7, 11
+Retrieving record 7, 13
+Retrieving record 7, 14
+Retrieving record 7, 15
+Retrieving record 7, 16
+Retrieving record 7, 17
+Retrieving record 7, 18
+4
+
+  Test 5: Test some error conditions
+Current Page No.: 7, Next Page No.: -1, Prev Page No.: -1, Available Space: 1000
+No record is deleted.
+
+No record is deleted. 
+
+FirstRecord in an empty page is handled correctly. 
+Overflow handled correctly.
+
+Current Page No.: 7, Next Page No.: -1, Prev Page No.: -1, Available Space: 1000
+4
+ -------------- Start of test 6 ---------------
+Initial space is 1000
+Secondary space is 1000
+Inserted 61 records
+Start of deletion
+ERROR: record 22has value5.60804e-246should have value 22
+ERROR: record 52has value3.66503e-241should have value 52
+ERROR: record 16has value5.60804e-246should have value 16
+ERROR: record 39has value1.53172e-308should have value 39
+ERROR: record 26has value2.99903e-241should have value 26
+ERROR: record 45has value2.70564e-291should have value 45
+ERROR: record 24has value2.99903e-241should have value 24
+ERROR: record 59has value2.70564e-291should have value 59
+ERROR: record 53has value2.086e-308should have value 53
+ERROR: record 2has value2.086e-308should have value 2
+ERROR: record 13has value3.01111e-241should have value 13
+ERROR: record 51has value1.9724e-236should have value 51
+ERROR: record 28has value1.9724e-236should have value 28
+ERROR: record 38has value3.01111e-241should have value 38
+ERROR: record 19has value1.9724e-236should have value 19
+ERROR: record 8has value3.01111e-241should have value 8
+ERROR: record 27has value1.9724e-236should have value 27
+ERROR: record 46has value-5.50622e+303should have value 46
+ERROR: record 29has value-5.50622e+303should have value 29
+ERROR: record 6has value3.01111e-241should have value 6
+ERROR: record 60has value2.22507e-308should have value 60
+ERROR: record 23has value2.22507e-308should have value 23
+ERROR: record 41has value1.96544e-236should have value 41
+ERROR: record 12has value2.22507e-308should have value 12
+ERROR: record 54has value1.52977e-308should have value 54
+ERROR: record 20has value1.52977e-308should have value 20
+ERROR: record 44has value1.97096e-236should have value 44
+ERROR: record 50has value-nanshould have value 50
+ERROR: record 36has value1.97096e-236should have value 36
+ERROR: record 57has value-5.50622e+303should have value 57
+ERROR: record 48has value-5.50622e+303should have value 48
+ERROR: record 4has value-5.50755e+303should have value 4
+ERROR: record 35has value-5.5022e+303should have value 35
+ERROR: record 11has value-5.5022e+303should have value 11
+ERROR: record 40has value-5.5022e+303should have value 40
+ERROR: record 3has value-5.5022e+303should have value 3
+ERROR: record 10has value2.99903e-241should have value 10
+ERROR: record 49has value1.94694e-308should have value 49
+ERROR: record 17has value1.94694e-308should have value 17
+ERROR: record 33has value1.94694e-308should have value 33
+ERROR: record 18has value1.94694e-308should have value 18
+ERROR: record 9has value2.99903e-241should have value 9
+ERROR: record 15has value2.99903e-241should have value 15
+ERROR: record 47has value1.94694e-308should have value 47
+ERROR: record 30has value1.94694e-308should have value 30
+ERROR: record 31has value2.99903e-241should have value 31
+ERROR: record 56has value1.94694e-308should have value 56
+ERROR: record 7has value2.99903e-241should have value 7
+ERROR: record 34has value1.94694e-308should have value 34
+ERROR: record 37has value2.99903e-241should have value 37
+ERROR: record 58has value1.94694e-308should have value 58
+ERROR: record 21has value1.94694e-308should have value 21
+ERROR: record 55has value-nanshould have value 55
+ERROR: record 43has value-5.5022e+303should have value 43
+ERROR: record 32has value-5.5022e+303should have value 32
+ERROR: record 42has value1.6688e-308should have value 42
+End of deletion
+Final space is 1000
+ -------------- End of test 6 ---------------
+
+...HFPage Tests tests completed successfully.
+

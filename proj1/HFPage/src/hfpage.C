@@ -111,17 +111,27 @@ Status HFPage::deleteRecord(const RID& rid)
 	
 	int length = slot[rid.slotNo].length;
 
-	void *new_ptr = (void *) ((long) usedPtr + length);
+	void *new_ptr = (void *) ((long) usedPtr + (long) &slot + length);
 
-	memmove(new_ptr, (void *) usedPtr, length);
+	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), length);
 	
 	usedPtr += length;
 	slot[rid.slotNo].length = EMPTY_SLOT;
-	
-	if (slotCnt-1 == rid.slotNo) {
-		slotCnt--;
-		freeSpace += sizeof(slot_t);
+
+	for(int i=rid.slotNo+1; i<slotCnt; i++){
+		slot[i].offset+= length;
 	}
+
+	for(int i=0; i<slotCnt; i++){
+		cout<<"slot no"<<i<< "  " <<(double) data[slot[i].offset] << endl;
+	}
+	
+	while(slot[slotCnt-1].length == EMPTY_SLOT){
+		slotCnt--;
+		freeSpace+=sizeof(slot_t);
+	}
+	
+	freeSpace += length; 
 	
     return OK;
 }
@@ -136,6 +146,11 @@ Status HFPage::firstRecord(RID& firstRid)
 
 	firstRid.pageNo = curPage;
 	firstRid.slotNo = 0;
+
+	while (slot[firstRid.slotNo].length == EMPTY_SLOT) {
+		firstRid.slotNo++;
+	}
+
 	
     return OK;
 }
@@ -145,6 +160,9 @@ Status HFPage::firstRecord(RID& firstRid)
 // returns DONE if no more records exist on the page; otherwise OK
 Status HFPage::nextRecord (RID curRid, RID& nextRid)
 {
+
+	if(curRid.pageNo != curPage || slotCnt <= curRid.slotNo || curRid.slotNo < 0 || slot[curRid.slotNo].length == EMPTY_SLOT)
+		return FAIL;
 	
 	if (slotCnt == curRid.slotNo + 1)
 		return DONE;
@@ -164,7 +182,7 @@ Status HFPage::nextRecord (RID curRid, RID& nextRid)
 // returns length and copies out record with RID rid
 Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 {
-	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+	if (rid.pageNo != curPage || slotCnt <= rid.slotNo || rid.slotNo < 0 || slot[rid.slotNo].length == EMPTY_SLOT)
 		return FAIL;
 	
 	slot_t s = slot[rid.slotNo];
@@ -183,7 +201,7 @@ Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 // in recPtr.
 Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 {
-   	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+   	if (rid.pageNo != curPage || slotCnt <= rid.slotNo || rid.slotNo < 0 || slot[rid.slotNo].length == EMPTY_SLOT)
 		return FAIL;
 	
 	slot_t s = slot[rid.slotNo];
