@@ -77,7 +77,7 @@ void HFPage::setNextPage(PageId pageNo)
 // RID of the new record is returned via rid parameter.
 Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 {
-	/*if (recLen > freeSpace)
+	if (recLen > freeSpace)
 		return DONE;
 	
 	usedPtr -= recLen;
@@ -97,7 +97,7 @@ Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 	freeSpace -= (recLen + sizeof(slot_t));
 	
 	
-    return OK;*/
+    return OK;
 }
 
 // **********************************************************
@@ -106,14 +106,14 @@ Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 // Use memmove() rather than memcpy() as space may overlap.
 Status HFPage::deleteRecord(const RID& rid)
 {
-	/*if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
 		return FAIL;
 	
 	int length = slot[rid.slotNo].length;
 
-	*void new_ptr = usedPtr + length;
+	void *new_ptr = (void *) ((long) usedPtr + length);
 
-	memmove(new_ptr, usedPtr, length);
+	memmove(new_ptr, (void *) usedPtr, length);
 	
 	usedPtr += length;
 	slot[rid.slotNo].length = EMPTY_SLOT;
@@ -123,7 +123,7 @@ Status HFPage::deleteRecord(const RID& rid)
 		freeSpace += sizeof(slot_t);
 	}
 	
-    return OK;*/
+    return OK;
 }
 
 // **********************************************************
@@ -131,13 +131,13 @@ Status HFPage::deleteRecord(const RID& rid)
 Status HFPage::firstRecord(RID& firstRid)
 {
 
-	/*if (slotCnt < 1) 
+	if (slotCnt < 1) 
 		return DONE;
 
 	firstRid.pageNo = curPage;
 	firstRid.slotNo = 0;
-
-    return OK;*/
+	
+    return OK;
 }
 
 // **********************************************************
@@ -146,7 +146,7 @@ Status HFPage::firstRecord(RID& firstRid)
 Status HFPage::nextRecord (RID curRid, RID& nextRid)
 {
 	
-	/*if (slotCnt < curRid.slotNo + 1)
+	if (slotCnt == curRid.slotNo + 1)
 		return DONE;
 	
 	nextRid.pageNo = curPage;
@@ -156,24 +156,24 @@ Status HFPage::nextRecord (RID curRid, RID& nextRid)
 	while (slot[nextRid.slotNo].length == EMPTY_SLOT) {
 		nextRid.slotNo++;
 	}
-
-    return OK;*/
+	
+    return OK;
 }
 
 // **********************************************************
 // returns length and copies out record with RID rid
 Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 {
-	/*if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
 		return FAIL;
 	
 	slot_t s = slot[rid.slotNo];
 	
-	memcpy(recPtr, data[s.offset], s.length);
+	memcpy(recPtr, &data[s.offset], s.length);
 	recLen = s.length;
 	
 	
-    return OK;*/
+    return OK;
 }
 
 // **********************************************************
@@ -183,15 +183,15 @@ Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 // in recPtr.
 Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 {
-   /* if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+   	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
 		return FAIL;
 	
 	slot_t s = slot[rid.slotNo];
 	
-	recPtr = data[s.offset];
+	recPtr = &data[s.offset];
 	recLen = s.length;
-
-    return OK;*/
+	
+    return OK;
 }
 
 // **********************************************************
