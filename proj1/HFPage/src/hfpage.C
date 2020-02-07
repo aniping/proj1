@@ -53,7 +53,6 @@ PageId HFPage::getPrevPage()
 // **********************************************************
 void HFPage::setPrevPage(PageId pageNo)
 {
-
     prevPage = pageNo;
 }
 
@@ -113,7 +112,7 @@ Status HFPage::deleteRecord(const RID& rid)
 
 	void *new_ptr = (void *) ((long) usedPtr + (long) &slot + length);
 
-	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), slot[rid.slotNo].offset - usedPtr);
+	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), slot[rid.slotNo].offset - usedPtr + 4);
 	
 	usedPtr += length;
 	slot[rid.slotNo].length = EMPTY_SLOT;
