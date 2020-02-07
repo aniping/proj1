@@ -113,19 +113,17 @@ Status HFPage::deleteRecord(const RID& rid)
 
 	void *new_ptr = (void *) ((long) usedPtr + (long) &slot + length);
 
-	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), length);
+	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), slot[rid.slotNo].offset - usedPtr);
 	
 	usedPtr += length;
 	slot[rid.slotNo].length = EMPTY_SLOT;
 
+	// shifts the offsets in the slot array to match the new positions
 	for(int i=rid.slotNo+1; i<slotCnt; i++){
 		slot[i].offset+= length;
 	}
 
-	for(int i=0; i<slotCnt; i++){
-		cout<<"slot no"<<i<< "  " <<(double) data[slot[i].offset] << endl;
-	}
-	
+	// removes any empty slots that are at the end
 	while(slot[slotCnt-1].length == EMPTY_SLOT){
 		slotCnt--;
 		freeSpace+=sizeof(slot_t);
@@ -206,7 +204,7 @@ Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 	
 	slot_t s = slot[rid.slotNo];
 	
-	recPtr = &data[s.offset];
+	recPtr = &data[s.offset];;
 	recLen = s.length;
 	
     return OK;
@@ -235,6 +233,4 @@ bool HFPage::empty(void)
 	
     return true;
 }
-
-
 
