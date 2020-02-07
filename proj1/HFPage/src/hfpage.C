@@ -16,8 +16,6 @@ void HFPage::init(PageId pageNo)
   nextPage = INVALID_PAGE;
   prevPage = INVALID_PAGE;
   
-  cout << sizeof(slot_t) << endl; 
-
   usedPtr = MAX_SPACE - DPFIXED ;
   freeSpace = MAX_SPACE - DPFIXED ;
   
@@ -110,11 +108,13 @@ Status HFPage::deleteRecord(const RID& rid)
 	
 	int length = slot[rid.slotNo].length;
 
-	void *new_ptr = (void *) ((long) usedPtr + (long) &slot + length);
+	void *new_ptr = (void *) ((long) usedPtr + ((long) &slot[1] + length ) );
 
-	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot), slot[rid.slotNo].offset - usedPtr + 4);
+	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot[1]), slot[rid.slotNo].offset - usedPtr);
+
+	// memmove(ptr1, ptr_src, 4);
 	
-	usedPtr += length;
+	usedPtr += (length);
 	slot[rid.slotNo].length = EMPTY_SLOT;
 
 	// shifts the offsets in the slot array to match the new positions
