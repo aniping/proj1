@@ -108,9 +108,9 @@ Status HFPage::deleteRecord(const RID& rid)
 	
 	int length = slot[rid.slotNo].length;
 
-	void *new_ptr = (void *) ((long) usedPtr + ((long) &slot[1] + length ) );
+	void *new_ptr = &data[usedPtr + length]; 
 
-	memmove(new_ptr, (void *) ((long) usedPtr + (long) &slot[1]), slot[rid.slotNo].offset - usedPtr);
+	memmove(new_ptr, &data[usedPtr], slot[rid.slotNo].offset - usedPtr);
 
 	// memmove(ptr1, ptr_src, 4);
 	
