@@ -3,8 +3,8 @@ Databases Systems Implementation CSC560
 Project 1:
 
 	Students 			NetID
-1. Jason Hall			jasonhall98
-2. Muhammad Ammar 		mammar
+1. Jason Hall					jasonhall98
+2. Muhammad Ammar 				mammar
 
 
 	Method to Run:
@@ -14,4 +14,3 @@ Project 1:
 	3) run ./hfpage
 	4) DONE
 
-	
