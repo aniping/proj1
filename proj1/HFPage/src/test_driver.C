@@ -72,6 +72,10 @@ int TestDriver::test6()
     return TRUE;
 }
 
+int TestDriver::test7()
+{
+    return TRUE;
+}
 
 const char* TestDriver::testName()
 {
@@ -186,5 +190,7 @@ Status TestDriver::runAllTests()
     runTest( answer, &TestDriver::test4 );
     runTest( answer, &TestDriver::test5 );
     runTest( answer, &TestDriver::test6 );
+    runTest( answer, &TestDriver::test7 );
+
     return answer;
 }

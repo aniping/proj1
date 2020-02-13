@@ -31,6 +31,7 @@ protected:
     virtual int test4();
     virtual int test5();
     virtual int test6();
+    virtual int test7(); 
 
       // ...and this method, which is printed as the kind of test being done,
       // for example "Disk Space Management".

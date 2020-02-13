@@ -486,3 +486,90 @@ int HfpDriver::test6()
     return (status == OK);    
 }
 
+
+int HfpDriver::test7(){
+    HFPage hfp;
+    Status status = OK;
+
+    RID  curRid;
+    RID  rid2;
+    RID  rid3;
+    PageId tmpPID = 10;
+    char LongStr[2001];
+
+    hfp.init(tmpPID);
+
+    cout << " -------------- Start of test 7 ---------------" << endl;
+
+  
+
+
+    // get initial space
+    int initialSpace;
+    initialSpace = hfp.available_space();
+    int biggerSpace = initialSpace + 1; // Try to insert more than available space
+    cout << "Initial space is " << initialSpace << endl;
+
+    // try to allocate a tuple of maximum size
+    status = hfp.insertRecord(LongStr, biggerSpace, curRid);
+    if(status != DONE){
+        cout << "ERROR: Didn't return DONE when trying to insert more than available space" << endl;
+    }
+
+
+
+
+    int fillHalf = initialSpace / 2;
+    cout << "Inserting record of size " << fillHalf << endl;
+    status = hfp.insertRecord(LongStr, fillHalf, rid2);
+    
+    if(status != OK){
+        cout << "ERROR: Could not insert half size tuple" << endl;
+    }
+    
+    int restOfSpace = hfp.available_space(); // Try to fill up the rest of the available space
+    
+    cout << "Inserting record of size " << restOfSpace << endl;
+    
+    status = hfp.insertRecord(LongStr, restOfSpace, rid3);
+    if(status != OK){
+        cout << "ERROR: Could not fill up rest of available space" << endl;
+    }
+
+    // Delete the second record
+    status = hfp.deleteRecord(rid2);
+    if(status != OK){
+        cout << "ERROR: could not delete second record" << endl;
+    }
+    RID rid4;
+
+    fillHalf = hfp.available_space();
+    status = hfp.insertRecord(LongStr, fillHalf, rid4);
+    if(status != OK){
+        cout << "ERROR: Could not insert another record with same size as record 2" << endl;
+    }
+    if(hfp.available_space() > 0){
+        cout << "ERROR: Free space should have been empty by now"  << endl;
+    }
+
+    // Now delete all records
+   
+    cout << "Free space before attempting to delete everything " << hfp.available_space() << endl;
+   
+    status = hfp.deleteRecord(rid3);
+   
+    if(status != OK){
+        cout << "ERROR: could not delete second record" << endl;
+    }
+   
+    cout << "Free space after deleting second record " << hfp.available_space() << endl;
+   
+    status = hfp.deleteRecord(rid4);
+   
+    if(status != OK){
+        cout << "ERROR: could not delete third record" << endl;
+    }
+
+    cout << "Free space at end of test 7 " << hfp.available_space() << endl;
+    return (status == OK);
+}

@@ -112,8 +112,7 @@ Status HFPage::deleteRecord(const RID& rid)
 
 	memmove(new_ptr, &data[usedPtr], slot[rid.slotNo].offset - usedPtr);
 
-	// memmove(ptr1, ptr_src, 4);
-	
+
 	usedPtr += (length);
 	slot[rid.slotNo].length = EMPTY_SLOT;
 
@@ -213,6 +212,9 @@ Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 // Returns the amount of available space on the heap file page
 int HFPage::available_space(void)
 {
+	if(freeSpace < 0){
+		return 0;
+	}
 
     return freeSpace;
 }
