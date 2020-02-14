@@ -3,7 +3,6 @@
 #include <memory.h>
 
 #include "hfpage.h"
-#include "heapfile.h"
 #include "buf.h"
 #include "db.h"
 
@@ -13,7 +12,16 @@
 
 void HFPage::init(PageId pageNo)
 {
-  // fill in the body
+  curPage = pageNo;
+  nextPage = INVALID_PAGE;
+  prevPage = INVALID_PAGE;
+  
+  usedPtr = MAX_SPACE - DPFIXED ;
+  freeSpace = MAX_SPACE - DPFIXED ;
+  
+  slotCnt = 0;
+  slot[0].length = EMPTY_SLOT;
+  
 }
 
 // **********************************************************
@@ -36,28 +44,28 @@ void HFPage::dumpPage()
 // **********************************************************
 PageId HFPage::getPrevPage()
 {
-    // fill in the body
-    return 0;
+	
+    return prevPage;
 }
 
 // **********************************************************
 void HFPage::setPrevPage(PageId pageNo)
 {
-
-    // fill in the body
+    prevPage = pageNo;
 }
 
 // **********************************************************
 PageId HFPage::getNextPage()
 {
-    // fill in the body
-    return 0;
+
+    return nextPage;
 }
 
 // **********************************************************
 void HFPage::setNextPage(PageId pageNo)
 {
-  // fill in the body
+
+	nextPage = pageNo;
 }
 
 // **********************************************************
@@ -66,7 +74,26 @@ void HFPage::setNextPage(PageId pageNo)
 // RID of the new record is returned via rid parameter.
 Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 {
-    // fill in the body
+	if (recLen > freeSpace)
+		return DONE;
+	
+	usedPtr -= recLen;
+	
+	for (int i = 0; i < recLen; i++) {
+		data[usedPtr + i] = *(recPtr + i);
+	}
+	
+	slot[slotCnt].offset = usedPtr;
+	slot[slotCnt].length = recLen;
+
+	rid.pageNo = curPage;
+	rid.slotNo = slotCnt;
+	
+	slotCnt++;
+	
+	freeSpace -= (recLen + sizeof(slot_t));
+	
+	
     return OK;
 }
 
@@ -76,7 +103,32 @@ Status HFPage::insertRecord(char* recPtr, int recLen, RID& rid)
 // Use memmove() rather than memcpy() as space may overlap.
 Status HFPage::deleteRecord(const RID& rid)
 {
-    // fill in the body
+	if (slotCnt <= rid.slotNo || rid.slotNo < 0)
+		return FAIL;
+	
+	int length = slot[rid.slotNo].length;
+
+	void *new_ptr = &data[usedPtr + length]; 
+
+	memmove(new_ptr, &data[usedPtr], slot[rid.slotNo].offset - usedPtr);
+
+
+	usedPtr += (length);
+	slot[rid.slotNo].length = EMPTY_SLOT;
+
+	// shifts the offsets in the slot array to match the new positions
+	for(int i=rid.slotNo+1; i<slotCnt; i++){
+		slot[i].offset+= length;
+	}
+
+	// removes any empty slots that are at the end
+	while(slot[slotCnt-1].length == EMPTY_SLOT){
+		slotCnt--;
+		freeSpace+=sizeof(slot_t);
+	}
+	
+	freeSpace += length; 
+	
     return OK;
 }
 
@@ -84,7 +136,18 @@ Status HFPage::deleteRecord(const RID& rid)
 // returns RID of first record on page
 Status HFPage::firstRecord(RID& firstRid)
 {
-    // fill in the body
+
+	if (slotCnt < 1) 
+		return DONE;
+
+	firstRid.pageNo = curPage;
+	firstRid.slotNo = 0;
+
+	while (slot[firstRid.slotNo].length == EMPTY_SLOT) {
+		firstRid.slotNo++;
+	}
+
+	
     return OK;
 }
 
@@ -93,8 +156,21 @@ Status HFPage::firstRecord(RID& firstRid)
 // returns DONE if no more records exist on the page; otherwise OK
 Status HFPage::nextRecord (RID curRid, RID& nextRid)
 {
-    // fill in the body
 
+	if(curRid.pageNo != curPage || slotCnt <= curRid.slotNo || curRid.slotNo < 0 || slot[curRid.slotNo].length == EMPTY_SLOT)
+		return FAIL;
+	
+	if (slotCnt == curRid.slotNo + 1)
+		return DONE;
+	
+	nextRid.pageNo = curPage;
+	nextRid.slotNo = curRid.slotNo + 1;
+	
+	// makes sure the slot being returned is not empty
+	while (slot[nextRid.slotNo].length == EMPTY_SLOT) {
+		nextRid.slotNo++;
+	}
+	
     return OK;
 }
 
@@ -102,7 +178,15 @@ Status HFPage::nextRecord (RID curRid, RID& nextRid)
 // returns length and copies out record with RID rid
 Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 {
-    // fill in the body
+	if (rid.pageNo != curPage || slotCnt <= rid.slotNo || rid.slotNo < 0 || slot[rid.slotNo].length == EMPTY_SLOT)
+		return FAIL;
+	
+	slot_t s = slot[rid.slotNo];
+	
+	memcpy(recPtr, &data[s.offset], s.length);
+	recLen = s.length;
+	
+	
     return OK;
 }
 
@@ -113,7 +197,14 @@ Status HFPage::getRecord(RID rid, char* recPtr, int& recLen)
 // in recPtr.
 Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 {
-    // fill in the body
+   	if (rid.pageNo != curPage || slotCnt <= rid.slotNo || rid.slotNo < 0 || slot[rid.slotNo].length == EMPTY_SLOT)
+		return FAIL;
+	
+	slot_t s = slot[rid.slotNo];
+	
+	recPtr = &data[s.offset];;
+	recLen = s.length;
+	
     return OK;
 }
 
@@ -121,8 +212,11 @@ Status HFPage::returnRecord(RID rid, char*& recPtr, int& recLen)
 // Returns the amount of available space on the heap file page
 int HFPage::available_space(void)
 {
-    // fill in the body
-    return 0;
+	if(freeSpace < 0){
+		return 0;
+	}
+
+    return freeSpace;
 }
 
 // **********************************************************
@@ -130,9 +224,15 @@ int HFPage::available_space(void)
 // It scans the slot directory looking for a non-empty slot.
 bool HFPage::empty(void)
 {
-    // fill in the body
+	int i = 0;
+	while (i < slotCnt) {
+		if (slot[i].length != EMPTY_SLOT)
+			return false;
+		
+		i++;
+	}
+	
     return true;
 }
-
 
 
